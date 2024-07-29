@@ -138,3 +138,4 @@ Control.system-ca-bundle
 GitHub.sublime-settings 
 
  .idea/
+ .idea/*
