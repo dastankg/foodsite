@@ -17,7 +17,7 @@ cats_db = [
 ]
 
 def index(request):
-    posts = Food.objects.filter(is_published=True)
+    posts = Food.published.filter(is_published=True)
     data = {'title': 'Food recipe', 'menu': menu, 'posts': posts, 'cat_selected': 0}
     return render(request, 'food/index.html', context=data)
 
@@ -52,3 +52,4 @@ def show_categories(request, cat_id):
     posts = Food.objects.filter(is_published=True)
     data = {'title': 'Отображение по рубрикам', 'menu': menu, 'posts': posts, 'cat_selected': cat_id}
     return render(request, 'food/index.html', context=data)
+

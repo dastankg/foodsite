@@ -4,14 +4,25 @@ from django.shortcuts import reverse
 
 # Create your models here.
 
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_published=Food.Status.PUBLISHED)
+
+
 class Food(models.Model):
+    class Status(models.IntegerChoices):
+        DRAFT = 0, 'Черновик'
+        PUBLISHED = 1, 'Опубликовано'
+
     title = models.CharField(max_length=255, verbose_name='Название')
     slug = models.SlugField(max_length=255, verbose_name='URL', db_index=True, unique=True)
     content = models.TextField(null=True, blank=True, verbose_name='Рецепт')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
     # photo = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True, verbose_name='Фото')
-    is_published = models.BooleanField(default=True, verbose_name='Опубликовано')
+    is_published = models.BooleanField(choices=Status.choices, default=Status.DRAFT, verbose_name='Опубликовано')
+    objects = models.Manager()
+    published = PublishedManager()
 
     def __str__(self):
         return self.title
