@@ -11,7 +11,7 @@
         {{p.content | linebreaks | truncatewords:30}}
         {% endautoescape %}
         <div class="clear"></div>
-        <p class='link-read-post'><a href="{%url 'posts' p.id %}">Читать рецепт</a></p>
+        <p class='link-read-post'><a href="{{ p.get_absolute_url }}">Читать рецепт</a></p>
     </li>
     {% endif %}
     {% endfor %}
