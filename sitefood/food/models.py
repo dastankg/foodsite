@@ -21,6 +21,8 @@ class Food(models.Model):
     updated = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
     # photo = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True, verbose_name='Фото')
     is_published = models.BooleanField(choices=Status.choices, default=Status.DRAFT, verbose_name='Опубликовано')
+    cat = models.ForeignKey('Category', on_delete=models.PROTECT, blank=True, verbose_name='Категория')
+
     objects = models.Manager()
     published = PublishedManager()
 
@@ -34,3 +36,8 @@ class Food(models.Model):
     #     verbose_name = 'Рецепт'
     #     verbose_name_plural = 'Рецепты'
     #     ordering = ['-created']
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100, db_index=True, verbose_name='Название категории')
+    slug = models.SlugField(max_length=100, db_index=True, unique=True)
