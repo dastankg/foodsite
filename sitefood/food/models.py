@@ -41,3 +41,6 @@ class Food(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=100, db_index=True, verbose_name='Название категории')
     slug = models.SlugField(max_length=100, db_index=True, unique=True)
+
+    def get_absolute_url(self):
+        return reverse('category', kwargs={'cat_slug': self.slug})

@@ -1,6 +1,6 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404
-from .models import Food
+from .models import Food, Category
 
 menu = [
     {'title': 'О сайте', 'url_name': 'about'},
@@ -9,12 +9,7 @@ menu = [
     {'title': 'Войти', 'url_name': 'login'}]
 
 
-cats_db = [
-    {'name': 'Завтраки', 'id': 1},
-    {'name': 'Супы', 'id': 2},
-    {'name': 'Гарниры', 'id': 3},
-    {'name': 'Десерты', 'id': 4}
-]
+
 
 def index(request):
     posts = Food.published.filter(is_published=True)
@@ -23,7 +18,7 @@ def index(request):
 
 
 def about(request):
-    return render(request, 'food/about.html', context={'title' : 'О сайте', 'menu': menu})
+    return render(request, 'food/about.html', context={'title': 'О сайте', 'menu': menu})
 
 
 def addpage(request):
@@ -48,8 +43,9 @@ def post(request, post_slug):
     }
     return render(request, 'food/post.html', context=data)
 
-def show_categories(request, cat_id):
-    posts = Food.objects.filter(is_published=True)
-    data = {'title': 'Отображение по рубрикам', 'menu': menu, 'posts': posts, 'cat_selected': cat_id}
-    return render(request, 'food/index.html', context=data)
 
+def show_categories(request, cat_slug):
+    category = get_object_or_404(Category, slug=cat_slug)
+    posts = Food.published.filter(cat_id=category.pk)
+    data = {'title': f'Рецепты: {category.name}', 'menu': menu, 'posts': posts, 'cat_selected': category.pk}
+    return render(request, 'food/index.html', context=data)
