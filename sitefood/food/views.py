@@ -9,10 +9,8 @@ menu = [
     {'title': 'Войти', 'url_name': 'login'}]
 
 
-
-
 def index(request):
-    posts = Food.published.filter(is_published=True)
+    posts = Food.published.filter(is_published=True).select_related('cat')
     data = {'title': 'Food recipe', 'menu': menu, 'posts': posts, 'cat_selected': 0}
     return render(request, 'food/index.html', context=data)
 
@@ -46,12 +44,13 @@ def post(request, post_slug):
 
 def show_categories(request, cat_slug):
     category = get_object_or_404(Category, slug=cat_slug)
-    posts = Food.published.filter(cat_id=category.pk)
+    posts = Food.published.filter(cat_id=category.pk).select_related('cat')
     data = {'title': f'Рецепты: {category.name}', 'menu': menu, 'posts': posts, 'cat_selected': category.pk}
     return render(request, 'food/index.html', context=data)
 
+
 def show_tag_postlists(request, tag_slug):
     tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=True)
+    posts = tag.tags.filter(is_published=Food.Status.PUBLISHED).select_related('cat')
     data = {'title': f'Рецепты по тегу: {tag.tag}', 'menu': menu, 'posts': posts, 'cat_selected': None}
     return render(request, 'food/index.html', context=data)
