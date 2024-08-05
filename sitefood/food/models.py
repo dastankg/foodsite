@@ -33,6 +33,9 @@ class Food(models.Model):
     def get_absolute_url(self):
         return reverse('post', kwargs={'post_slug': self.slug})
 
+    def save(self, *args, **kwargs):
+        self.slug = self.slug or self.title
+        return super().save(*args, **kwargs)
     # class Meta:
     #     verbose_name = 'Рецепт'
     #     verbose_name_plural = 'Рецепты'
@@ -56,7 +59,4 @@ class TagPost(models.Model):
 
     def get_absolute_url(self):
         return reverse('tag', kwargs={'tag_slug': self.slug})
-
-from django.db import models
-
 
