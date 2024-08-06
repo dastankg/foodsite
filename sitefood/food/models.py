@@ -50,6 +50,10 @@ class Category(models.Model):
         return reverse('category', kwargs={'cat_slug': self.slug})
 
 
+    def __str__(self):
+        return self.name
+
+
 class TagPost(models.Model):
     tag = models.CharField(max_length=100, db_index=True, verbose_name='Тег')
     slug = models.SlugField(max_length=100, db_index=True, unique=True)

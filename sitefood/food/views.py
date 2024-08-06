@@ -1,5 +1,7 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404
+
+from .forms import AddPostForm
 from .models import Food, Category, TagPost
 
 menu = [
@@ -54,3 +56,26 @@ def show_tag_postlists(request, tag_slug):
     posts = tag.tags.filter(is_published=Food.Status.PUBLISHED).select_related('cat')
     data = {'title': f'Рецепты по тегу: {tag.tag}', 'menu': menu, 'posts': posts, 'cat_selected': None}
     return render(request, 'food/index.html', context=data)
+
+
+def addpage(request):
+    if request.method == 'POST':
+        form = AddPostForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+    else:
+        form = AddPostForm()
+
+    data = {'title': 'Добавление рецепта', 'menu': menu, 'form': form}
+    return render(request, 'food/addpage.html', context=data)
+
+
+def comment_add(request):
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            return form
+    else:
+        form = CommentForm()
+
+    return render(request, 'food/comment.html', context={'form': form})
