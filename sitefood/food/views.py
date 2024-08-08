@@ -1,5 +1,5 @@
 from django.http import HttpResponse, Http404
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
 from .forms import AddPostForm
 from .models import Food, Category, TagPost
@@ -62,23 +62,13 @@ def addpage(request):
     if request.method == 'POST':
         form = AddPostForm(request.POST)
         if form.is_valid():
+            form.save()
+            return redirect('home')
 
-            try:
-                food = Food.objects.create(
-                    title=form.cleaned_data['title'],
-                    slug=form.cleaned_data['slug'],
-                    content=form.cleaned_data['content'],
-                    cat=form.cleaned_data['cat'],
-                    is_published=form.cleaned_data['is_published']
-                )
-                if form.cleaned_data['tags']:
-                    food.tags.set(form.cleaned_data['tags'])
-                food.save()
-                return HttpResponse('Статья добавлена')
-            except:
-                form.add_error(None, 'Ошибка добавления статьи')
     else:
         form = AddPostForm()
 
     data = {'title': 'Добавление рецепта', 'menu': menu, 'form': form}
     return render(request, 'food/addpage.html', context=data)
+
+
