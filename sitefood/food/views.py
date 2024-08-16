@@ -1,5 +1,7 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views import View
+from django.views.generic import TemplateView
 
 from .forms import AddPostForm, UploadFileForm
 from .models import Food, Category, TagPost, UploadFiles
@@ -11,11 +13,19 @@ menu = [
     {'title': 'Войти', 'url_name': 'login'}]
 
 
-def index(request):
+class FoodHome(TemplateView):
+    template_name = 'food/index.html'
     posts = Food.published.filter(is_published=True).select_related('cat')
-    data = {'title': 'Food recipe', 'menu': menu, 'posts': posts, 'cat_selected': 0}
-    return render(request, 'food/index.html', context=data)
+    extra_context = {'title': 'Food recipe', 'menu': menu, 'posts': posts, 'cat_selected': 0}
 
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['menu'] = menu
+    #     context['posts'] = self.posts
+    #     context['title'] = 'Food recipe'
+    #     context['cat_selected'] = 0
+    #     return context
 
 def about(request):
     if request.method == 'POST':
@@ -26,7 +36,6 @@ def about(request):
     else:
         form = UploadFiles()
     return render(request, 'food/about.html', context={'title': 'О сайте', 'menu': menu, 'form': form})
-
 
 
 def contact(request):
@@ -62,15 +71,27 @@ def show_tag_postlists(request, tag_slug):
     return render(request, 'food/index.html', context=data)
 
 
-def addpage(request):
-    if request.method == 'POST':
+class AddPage(View):
+    def get(self, request):
+        form = AddPostForm()
+        data = {
+            'title': 'Добавление рецепта',
+            'menu': menu,
+            'form': form
+        }
+
+        return render(request, 'food/addpage.html', context=data)
+
+    def post(self, request):
         form = AddPostForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('home')
 
-    else:
-        form = AddPostForm()
+        data = {
+            'title': 'Добавление рецепта',
+            'menu': menu,
+            'form': form
+        }
 
-    data = {'title': 'Добавление рецепта', 'menu': menu, 'form': form}
-    return render(request, 'food/addpage.html', context=data)
+        return render(request, 'food/addpage.html', context=data)
