@@ -1,8 +1,8 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
-from .forms import AddPostForm
-from .models import Food, Category, TagPost
+from .forms import AddPostForm, UploadFileForm
+from .models import Food, Category, TagPost, UploadFiles
 
 menu = [
     {'title': 'О сайте', 'url_name': 'about'},
@@ -18,11 +18,15 @@ def index(request):
 
 
 def about(request):
-    return render(request, 'food/about.html', context={'title': 'О сайте', 'menu': menu})
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            fp = UploadFiles(file=form.cleaned_data['file'])
+            fp.save()
+    else:
+        form = UploadFiles()
+    return render(request, 'food/about.html', context={'title': 'О сайте', 'menu': menu, 'form': form})
 
-
-def addpage(request):
-    return HttpResponse('Добавление статьи')
 
 
 def contact(request):
@@ -60,7 +64,7 @@ def show_tag_postlists(request, tag_slug):
 
 def addpage(request):
     if request.method == 'POST':
-        form = AddPostForm(request.POST)
+        form = AddPostForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('home')
@@ -70,5 +74,3 @@ def addpage(request):
 
     data = {'title': 'Добавление рецепта', 'menu': menu, 'form': form}
     return render(request, 'food/addpage.html', context=data)
-
-

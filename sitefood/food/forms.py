@@ -16,3 +16,9 @@ class AddPostForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'cols': 50, 'rows': 5}),
         }
 
+
+class UploadFileForm(forms.Form):
+    file = forms.ImageField(label='Файл')
+
+
+

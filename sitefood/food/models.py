@@ -2,8 +2,6 @@ from django.db import models
 from django.shortcuts import reverse
 
 
-# Create your models here.
-
 class PublishedManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_published=Food.Status.PUBLISHED)
@@ -17,13 +15,12 @@ class Food(models.Model):
     title = models.CharField(max_length=255, verbose_name='Название')
     slug = models.SlugField(max_length=255, verbose_name='URL', db_index=True, unique=True)
     content = models.TextField(null=True, blank=True, verbose_name='Рецепт')
+    photo = models.ImageField(upload_to='photos/%Y/%m/%d/', verbose_name='Фото', default=None, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated = models.DateTimeField(auto_now=True, verbose_name='Дата изменения')
-    # photo = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True, verbose_name='Фото')
     is_published = models.BooleanField(choices=Status.choices, default=Status.DRAFT, verbose_name='Опубликовано')
     cat = models.ForeignKey('Category', on_delete=models.PROTECT, blank=True, verbose_name='Категория')
     tags = models.ManyToManyField('TagPost', blank=True, related_name='tags', verbose_name='Теги')
-
     objects = models.Manager()
     published = PublishedManager()
 
@@ -36,10 +33,6 @@ class Food(models.Model):
     def save(self, *args, **kwargs):
         self.slug = self.slug or self.title
         return super().save(*args, **kwargs)
-    # class Meta:
-    #     verbose_name = 'Рецепт'
-    #     verbose_name_plural = 'Рецепты'
-    #     ordering = ['-created']
 
 
 class Category(models.Model):
@@ -48,7 +41,6 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         return reverse('category', kwargs={'cat_slug': self.slug})
-
 
     def __str__(self):
         return self.name
@@ -64,3 +56,6 @@ class TagPost(models.Model):
     def get_absolute_url(self):
         return reverse('tag', kwargs={'tag_slug': self.slug})
 
+
+class UploadFiles(models.Model):
+    file = models.FileField(upload_to='uploads_model')

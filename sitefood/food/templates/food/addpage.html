@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>{{title}}</h1>
-<form action="" method="POST">
+<form action="" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="form-error">{{form.non.fields.errors }}</div>
     {%for i in form%}
