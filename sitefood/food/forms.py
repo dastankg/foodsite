@@ -19,6 +19,3 @@ class AddPostForm(forms.ModelForm):
 
 class UploadFileForm(forms.Form):
     file = forms.ImageField(label='Файл')
-
-
-

@@ -1,7 +1,8 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView, DeleteView
 
 from .forms import AddPostForm, UploadFileForm
 from .models import Food, Category, TagPost, UploadFiles
@@ -20,14 +21,6 @@ class FoodHome(ListView):
 
     def get_queryset(self):
         return Food.published.select_related('cat')
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['menu'] = menu
-    #     context['posts'] = self.posts
-    #     context['title'] = 'Food recipe'
-    #     context['cat_selected'] = 0
-    #     return context
 
 
 def about(request):
@@ -60,7 +53,6 @@ class ShowPost(DetailView):
         context['menu'] = menu
         context['title'] = context['post'].title
         return context
-
 
     def get_object(self, queryset=None):
         return get_object_or_404(Food.published, slug=self.kwargs[self.slug_url_kwarg])
@@ -100,27 +92,25 @@ class FoodTag(ListView):
         return context
 
 
-class AddPage(View):
-    def get(self, request):
-        form = AddPostForm()
-        data = {
-            'title': 'Добавление рецепта',
-            'menu': menu,
-            'form': form
-        }
+class AddPage(CreateView):
 
-        return render(request, 'food/addpage.html', context=data)
+    form_class = AddPostForm
 
-    def post(self, request):
-        form = AddPostForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
+    template_name = 'food/addpage.html'
 
-        data = {
-            'title': 'Добавление рецепта',
-            'menu': menu,
-            'form': form
-        }
+    extra_context = {'title': 'Добавление рецепта', 'menu': menu}
 
-        return render(request, 'food/addpage.html', context=data)
+
+class UpdatePage(UpdateView):
+    model = Food
+    fields = ['title', 'content', 'photo', 'cat', 'tags', 'is_published']
+    template_name = 'food/addpage.html'
+    success_url = reverse_lazy('home')
+    extra_context = {'title': 'Редактирование рецепта', 'menu': menu}
+
+
+class DeletePage(DeleteView):
+    model = Food
+    template_name = 'food/addpage.html'
+    success_url = reverse_lazy('home')
+    extra_context = {'title': 'Удаление рецепта', 'menu': menu}
