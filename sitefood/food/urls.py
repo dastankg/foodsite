@@ -7,9 +7,9 @@ urlpatterns = [
     path('addpage/', views.AddPage.as_view(), name='addpage'),
     path('contact', views.contact, name='contact'),
     path('login', views.login, name='login'),
-    path('post/<slug:post_slug>/', views.post, name='post'),
-    path('category/<slug:cat_slug>/', views.show_categories, name='category'),
-    path('tag/<slug:tag_slug>/', views.show_tag_postlists, name='tag'),
+    path('post/<slug:post_slug>/', views.ShowPost.as_view(), name='post'),
+    path('category/<slug:cat_slug>/', views.FoodCategory.as_view(), name='category'),
+    path('tag/<slug:tag_slug>/', views.FoodTag.as_view(), name='tag'),
 ]
 
 

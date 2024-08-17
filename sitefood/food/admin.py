@@ -43,3 +43,10 @@ class CategoryAdmin(admin.ModelAdmin):
     ordering = ['name']
     # search_fields = ('name', )
     # prepopulated_fields = {'slug': ('name', )}
+
+
+@admin.register(TagPost)
+class TagPostInline(admin.ModelAdmin):
+
+    list_display = ('tag', 'slug')
+    list_display_links = ('tag',)

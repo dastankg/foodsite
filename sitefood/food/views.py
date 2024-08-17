@@ -1,7 +1,7 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView, DetailView
 
 from .forms import AddPostForm, UploadFileForm
 from .models import Food, Category, TagPost, UploadFiles
@@ -13,11 +13,13 @@ menu = [
     {'title': 'Войти', 'url_name': 'login'}]
 
 
-class FoodHome(TemplateView):
+class FoodHome(ListView):
+    model = Food
     template_name = 'food/index.html'
-    posts = Food.published.filter(is_published=True).select_related('cat')
-    extra_context = {'title': 'Food recipe', 'menu': menu, 'posts': posts, 'cat_selected': 0}
+    extra_context = {'title': 'Food recipe', 'menu': menu, 'cat_selected': 0}
 
+    def get_queryset(self):
+        return Food.published.select_related('cat')
 
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
@@ -26,6 +28,7 @@ class FoodHome(TemplateView):
     #     context['title'] = 'Food recipe'
     #     context['cat_selected'] = 0
     #     return context
+
 
 def about(request):
     if request.method == 'POST':
@@ -46,29 +49,55 @@ def login(request):
     return HttpResponse('Авторизация')
 
 
-def post(request, post_slug):
-    post = get_object_or_404(Food, slug=post_slug)
-    data = {
-        'title': post.title,
-        'post': post,
-        'menu': menu,
-        'cat_selected': 1
-    }
-    return render(request, 'food/post.html', context=data)
+class ShowPost(DetailView):
+    model = Food
+    template_name = 'food/post.html'
+    slug_url_kwarg = 'post_slug'
+    context_object_name = 'post'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu'] = menu
+        context['title'] = context['post'].title
+        return context
 
 
-def show_categories(request, cat_slug):
-    category = get_object_or_404(Category, slug=cat_slug)
-    posts = Food.published.filter(cat_id=category.pk).select_related('cat')
-    data = {'title': f'Рецепты: {category.name}', 'menu': menu, 'posts': posts, 'cat_selected': category.pk}
-    return render(request, 'food/index.html', context=data)
+    def get_object(self, queryset=None):
+        return get_object_or_404(Food.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
-def show_tag_postlists(request, tag_slug):
-    tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=Food.Status.PUBLISHED).select_related('cat')
-    data = {'title': f'Рецепты по тегу: {tag.tag}', 'menu': menu, 'posts': posts, 'cat_selected': None}
-    return render(request, 'food/index.html', context=data)
+class FoodCategory(ListView):
+    template_name = 'food/index.html'
+    context_object_name = 'posts'
+    allow_empty = False
+
+    def get_queryset(self):
+        return Food.published.filter(cat__slug=self.kwargs['cat_slug']).select_related('cat')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cat = context['posts'][0].cat
+        context['title'] = 'Категория -' + cat.name
+        context['menu'] = menu
+        context['cat_selected'] = cat.pk
+        return context
+
+
+class FoodTag(ListView):
+    template_name = 'food/index.html'
+    context_object_name = 'posts'
+    allow_empty = False
+
+    def get_queryset(self):
+        return Food.published.filter(tags__slug=self.kwargs['tag_slug']).select_related('cat')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tag = TagPost.objects.get(slug=self.kwargs['tag_slug'])
+        context['title'] = 'Тег - ' + tag.tag
+        context['menu'] = menu
+        context['cat_selected'] = None
+        return context
 
 
 class AddPage(View):
