@@ -6,18 +6,14 @@ from django.views.generic import TemplateView, ListView, DetailView, FormView, C
 
 from .forms import AddPostForm, UploadFileForm
 from .models import Food, Category, TagPost, UploadFiles
-
-menu = [
-    {'title': 'О сайте', 'url_name': 'about'},
-    {'title': 'Добавить рецепт', 'url_name': 'addpage'},
-    {'title': 'Обратная связь', 'url_name': 'contact'},
-    {'title': 'Войти', 'url_name': 'login'}]
+from .templatetags.utils import DataMixin
 
 
-class FoodHome(ListView):
+class FoodHome(DataMixin, ListView):
     model = Food
     template_name = 'food/index.html'
-    extra_context = {'title': 'Food recipe', 'menu': menu, 'cat_selected': 0}
+    title_page = 'Главная страница'
+    cat_selected = 0
 
     def get_queryset(self):
         return Food.published.select_related('cat')
@@ -31,7 +27,7 @@ def about(request):
             fp.save()
     else:
         form = UploadFiles()
-    return render(request, 'food/about.html', context={'title': 'О сайте', 'menu': menu, 'form': form})
+    return render(request, 'food/about.html', context={'title': 'О сайте', 'form': form})
 
 
 def contact(request):
@@ -42,7 +38,8 @@ def login(request):
     return HttpResponse('Авторизация')
 
 
-class ShowPost(DetailView):
+class ShowPost(DataMixin,
+               DetailView):
     model = Food
     template_name = 'food/post.html'
     slug_url_kwarg = 'post_slug'
@@ -50,15 +47,13 @@ class ShowPost(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = menu
-        context['title'] = context['post'].title
-        return context
+        return self.get_mixin_context(context, title=context['post'].title)
 
     def get_object(self, queryset=None):
         return get_object_or_404(Food.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
-class FoodCategory(ListView):
+class FoodCategory(DataMixin, ListView):
     template_name = 'food/index.html'
     context_object_name = 'posts'
     allow_empty = False
@@ -69,13 +64,10 @@ class FoodCategory(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         cat = context['posts'][0].cat
-        context['title'] = 'Категория -' + cat.name
-        context['menu'] = menu
-        context['cat_selected'] = cat.pk
-        return context
+        return self.get_mixin_context(context, title='Категрия' + cat.name, cat_selected=cat.id)
 
 
-class FoodTag(ListView):
+class FoodTag(DataMixin, ListView):
     template_name = 'food/index.html'
     context_object_name = 'posts'
     allow_empty = False
@@ -86,19 +78,16 @@ class FoodTag(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         tag = TagPost.objects.get(slug=self.kwargs['tag_slug'])
-        context['title'] = 'Тег - ' + tag.tag
-        context['menu'] = menu
-        context['cat_selected'] = None
-        return context
+
+        return self.get_mixin_context(context, title='Тег' + tag.tag)
 
 
-class AddPage(CreateView):
-
+class AddPage(DataMixin, CreateView):
     form_class = AddPostForm
 
     template_name = 'food/addpage.html'
 
-    extra_context = {'title': 'Добавление рецепта', 'menu': menu}
+    title_page = 'Добавление рецепта'
 
 
 class UpdatePage(UpdateView):
@@ -106,11 +95,11 @@ class UpdatePage(UpdateView):
     fields = ['title', 'content', 'photo', 'cat', 'tags', 'is_published']
     template_name = 'food/addpage.html'
     success_url = reverse_lazy('home')
-    extra_context = {'title': 'Редактирование рецепта', 'menu': menu}
+    title = 'Редактирование рецепта'
 
 
 class DeletePage(DeleteView):
     model = Food
     template_name = 'food/addpage.html'
     success_url = reverse_lazy('home')
-    extra_context = {'title': 'Удаление рецепта', 'menu': menu}
+    title = 'Удаление рецепта'
