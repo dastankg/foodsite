@@ -3,12 +3,22 @@
 {% block content %}
 <h1> {{ title }} </h1>
 
-<form action="" method="post" enctype="multipart/form-data">
-    {%csrf_token%}
-    {{form.as_p}}
-    <p>
-            <button type="submit">Submit</button>
-    </p>
+{%for item in page_obj%}
+    <h2>{{item.title}}</h2>
+    <p>{{item.content}}</p>
+    <p>{{item.created}}</p>
+    <p>{{item.updated}}</p>
+    <p>{{item.cat}}</p>
+{%endfor%}
 
-</form>
+<nav>
+    <ul>
+        {% for p in page_obj.paginator.page_range %}
+        <li>
+            <a href="?page={{ p }}">{{p}}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</nav>
+
 {% endblock %}

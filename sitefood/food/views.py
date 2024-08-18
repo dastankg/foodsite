@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -14,20 +15,19 @@ class FoodHome(DataMixin, ListView):
     template_name = 'food/index.html'
     title_page = 'Главная страница'
     cat_selected = 0
+    paginate_by = 3
 
     def get_queryset(self):
         return Food.published.select_related('cat')
 
 
 def about(request):
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            fp = UploadFiles(file=form.cleaned_data['file'])
-            fp.save()
-    else:
-        form = UploadFiles()
-    return render(request, 'food/about.html', context={'title': 'О сайте', 'form': form})
+    contact_list = Food.published.all()
+    paginator = Paginator(contact_list, 2)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'food/about.html', context={'title': 'О сайте', 'page_obj': page_obj})
 
 
 def contact(request):
@@ -57,6 +57,7 @@ class FoodCategory(DataMixin, ListView):
     template_name = 'food/index.html'
     context_object_name = 'posts'
     allow_empty = False
+
 
     def get_queryset(self):
         return Food.published.filter(cat__slug=self.kwargs['cat_slug']).select_related('cat')
