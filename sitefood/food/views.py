@@ -1,13 +1,12 @@
 from django.core.paginator import Paginator
-from django.http import HttpResponse, Http404
-from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
-from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from .forms import AddPostForm, UploadFileForm
-from .models import Food, Category, TagPost, UploadFiles
-from .templatetags.utils import DataMixin
+from .forms import AddPostForm
+from .models import Food, TagPost
+from food.utils import DataMixin
 
 
 class FoodHome(DataMixin, ListView):

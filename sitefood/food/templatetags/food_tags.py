@@ -2,8 +2,15 @@ from django import template
 from django.db.models import Count
 import food.views as views
 from food.models import Category, TagPost
+from food.utils import menu
+
 register = template.Library()
 
+
+
+@register.simple_tag()
+def get_menu():
+    return menu
 
 @register.inclusion_tag('food/list_categories.html')
 def show_categories(cat_selected=0):
