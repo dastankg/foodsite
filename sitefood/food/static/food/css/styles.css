@@ -94,9 +94,9 @@ ul.list-articles li {
 }
 
 .logo {
-    background: url('../images/logo.png') no-repeat 10px 5px;
-    width: 60px;
-    height: 50px;
+    background: url('../images/logo.png') no-repeat 8px 3px;
+    width: 80px;
+    height: 70px;
 }
 
 ul.mainmenu {
@@ -549,4 +549,11 @@ ul.lang-list li a:hover {
 
 .list-pages .page-num-selected:hover {
     box-shadow: none;
+}
+
+li.last form {
+    display: inline-block;
+    button {
+        all: unset;
+    };
 }

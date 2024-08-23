@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
@@ -20,6 +22,7 @@ class FoodHome(DataMixin, ListView):
         return Food.published.select_related('cat')
 
 
+@login_required
 def about(request):
     contact_list = Food.published.all()
     paginator = Paginator(contact_list, 2)
@@ -57,7 +60,6 @@ class FoodCategory(DataMixin, ListView):
     context_object_name = 'posts'
     allow_empty = False
 
-
     def get_queryset(self):
         return Food.published.filter(cat__slug=self.kwargs['cat_slug']).select_related('cat')
 
@@ -82,12 +84,17 @@ class FoodTag(DataMixin, ListView):
         return self.get_mixin_context(context, title='Тег' + tag.tag)
 
 
-class AddPage(DataMixin, CreateView):
+class AddPage(LoginRequiredMixin, DataMixin, CreateView, ):
     form_class = AddPostForm
 
     template_name = 'food/addpage.html'
 
     title_page = 'Добавление рецепта'
+
+    def form_valid(self, form):
+        w = form.save(commit=False)
+        w.author = self.request.user
+        return super().form_valid(form)
 
 
 class UpdatePage(UpdateView):

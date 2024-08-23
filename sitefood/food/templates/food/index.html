@@ -7,7 +7,8 @@
 
     <li>
         <div class='article-panel'>
-            <p class="first">Категория: {{p.cat.name}}</p>
+            <p class="first">Категория: {{p.cat.name }} |
+            {{ p.author.username | default:" Аноним " }}</p>
             <p class="last">Дата: {{p.updated | date:'d-m-Y H:i:s'}}</p>
         </div>
 
