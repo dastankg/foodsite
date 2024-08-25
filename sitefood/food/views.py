@@ -4,9 +4,9 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
 
-from .forms import AddPostForm
+from .forms import AddPostForm, ContactForm
 from .models import Food, TagPost
 from food.utils import DataMixin
 
@@ -32,9 +32,19 @@ def about(request):
     return render(request, 'food/about.html', context={'title': 'О сайте', 'page_obj': page_obj})
 
 
-@permission_required('food.view_food', raise_exception=True)
-def contact(request):
-    return HttpResponse('Обратная связь')
+class ContactFormView(LoginRequiredMixin, DataMixin, FormView):
+    form_class = ContactForm
+    success_url = reverse_lazy('home')
+    template_name = 'food/contact.html'
+
+    # def form_valid(self, form):
+    #     print(form.cleaned_data)
+    #     return super().form_valid(form)
+
+
+# @permission_required('food.view_food', raise_exception=True)
+# def contact(request):
+#     return HttpResponse('Обратная связь')
 
 
 def login(request):

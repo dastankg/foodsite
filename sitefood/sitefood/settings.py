@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'food.apps.FoodConfig',
     'users.apps.UsersConfig',
     'social_django',
+    'captcha',
 
 ]
 
