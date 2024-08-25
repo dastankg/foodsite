@@ -86,9 +86,17 @@ WSGI_APPLICATION = 'sitefood.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'sitefood',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',
+        'PORT': 5432
     }
 }
 
@@ -163,4 +171,3 @@ DEFAULT_USER_IMAGE = MEDIA_URL + 'users/img.png'
 
 SOCIAL_AUTH_GITHUB_KEY = 'Ov23lipFgiNI2D27aAVf'
 SOCIAL_AUTH_GITHUB_SECRET = 'd38bcbd5a12594b2d743b41205202d29caa556fa'
-
