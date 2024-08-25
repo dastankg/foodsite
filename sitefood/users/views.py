@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import CreateView, UpdateView
 
+from sitefood import settings
 from .forms import LoginUserForm, RegisterUserForm, ProfileUserForm, UserPasswordChangeForm
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.urls import reverse, reverse_lazy
@@ -31,7 +32,7 @@ class ProfileUser(LoginRequiredMixin, UpdateView):
     model = get_user_model()
     form_class = ProfileUserForm
     template_name = 'users/profile.html'
-    extra_context = {'title': 'Профиль'}
+    extra_context = {'title': 'Профиль', 'default_image': settings.DEFAULT_USER_IMAGE}
 
     def get_success_url(self):
         return reverse_lazy('users:profile')

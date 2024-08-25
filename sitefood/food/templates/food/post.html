@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
 {% block breadcrumbs %}
+
+{% if perms.food.change_food %}
+<p><a href="{% url 'edit_page' post.slug %}">Редактировать</a></p>
+{% endif %}
+
 {% with post.tags.all as tags %}
 {% if tags %}
 <ul class="tags-list">

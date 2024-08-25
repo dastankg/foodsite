@@ -40,10 +40,12 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'food.apps.FoodConfig',
     'users.apps.UsersConfig',
+    'social_django',
 
 ]
 
 MIDDLEWARE = [
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -52,6 +54,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
+
 ]
 
 ROOT_URLCONF = 'sitefood.urls'
@@ -68,6 +72,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'users.context_processors.get_food_context',
+
+                'social_django.context_processors.backends',  # <-- Here
+                'social_django.context_processors.login_redirect'
             ],
         },
     },
@@ -133,6 +140,7 @@ LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'users:login'
 
 AUTHENTICATION_BACKENDS = [
+    'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'users.authentication.EmailAuthBackend',
 ]
@@ -148,3 +156,11 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
 EMAIL_ADMIN = EMAIL_HOST_USER
+
+AUTH_USER_MODEL = 'users.User'
+
+DEFAULT_USER_IMAGE = MEDIA_URL + 'users/img.png'
+
+SOCIAL_AUTH_GITHUB_KEY = 'Ov23lipFgiNI2D27aAVf'
+SOCIAL_AUTH_GITHUB_SECRET = 'd38bcbd5a12594b2d743b41205202d29caa556fa'
+

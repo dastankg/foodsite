@@ -1,5 +1,5 @@
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
@@ -32,6 +32,7 @@ def about(request):
     return render(request, 'food/about.html', context={'title': 'О сайте', 'page_obj': page_obj})
 
 
+@permission_required('food.view_food', raise_exception=True)
 def contact(request):
     return HttpResponse('Обратная связь')
 
@@ -84,12 +85,11 @@ class FoodTag(DataMixin, ListView):
         return self.get_mixin_context(context, title='Тег' + tag.tag)
 
 
-class AddPage(LoginRequiredMixin, DataMixin, CreateView, ):
+class AddPage(PermissionRequiredMixin, LoginRequiredMixin, DataMixin, CreateView, ):
     form_class = AddPostForm
-
     template_name = 'food/addpage.html'
-
     title_page = 'Добавление рецепта'
+    permission_required = ('food.add_food',)
 
     def form_valid(self, form):
         w = form.save(commit=False)
@@ -97,12 +97,13 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView, ):
         return super().form_valid(form)
 
 
-class UpdatePage(UpdateView):
+class UpdatePage(PermissionRequiredMixin, UpdateView):
     model = Food
     fields = ['title', 'content', 'photo', 'cat', 'tags', 'is_published']
     template_name = 'food/addpage.html'
     success_url = reverse_lazy('home')
     title = 'Редактирование рецепта'
+    permission_required = ('food.change_food',)
 
 
 class DeletePage(DeleteView):

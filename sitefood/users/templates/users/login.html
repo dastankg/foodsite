@@ -10,8 +10,8 @@
     <input type="hidden" name="next" value="{{ next }}"/>
     <div class="form-error">{{form.non.fields.errors }}</div>
     {%for i in form%}
-     <p><label class="form-label" for="{{i.id_for_label}}">{{i.label}}</label>{{i}}</p>
-        <div class="form-error">{{i.errors}}</div>
+    <p><label class="form-label" for="{{i.id_for_label}}">{{i.label}}</label>{{i}}</p>
+    <div class="form-error">{{i.errors}}</div>
     {%endfor %}
 
     <p>
@@ -20,5 +20,9 @@
     <p>
         <a href="{% url 'users:password_reset' %}">Забыли пароль?</a>
 </form>
+
+<hr>
+<p><a href="{% url 'social:begin' 'github' %}"><img src="/media/social-auth/img.png"></a></p>
+
 
 {% endblock %}
