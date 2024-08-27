@@ -18,8 +18,14 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from django.urls import path
 from django.urls.conf import include
-
+from django.contrib.sitemaps.views import sitemap
 from . import settings
+from food.sitemaps import PostSitemap, CategorySitemap
+
+sitemaps = {
+    'posts': PostSitemap,
+    'categories': CategorySitemap
+}
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +34,7 @@ urlpatterns = [
     path('__debug__/', include('debug_toolbar.urls')),
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('captcha/', include('captcha.urls')),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap')
 ]
 
 if settings.DEBUG:

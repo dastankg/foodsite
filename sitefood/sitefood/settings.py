@@ -42,8 +42,10 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'social_django',
     'captcha',
-
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
 ]
+
 
 MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -184,4 +186,4 @@ DEFAULT_USER_IMAGE = MEDIA_URL + 'users/img.png'
 SOCIAL_AUTH_GITHUB_KEY = 'Ov23lipFgiNI2D27aAVf'
 SOCIAL_AUTH_GITHUB_SECRET = 'd38bcbd5a12594b2d743b41205202d29caa556fa'
 
-
+SITE_ID = 1
