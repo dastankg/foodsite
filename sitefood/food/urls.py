@@ -1,8 +1,10 @@
 from django.urls import path
 from . import views
+from django.views.decorators.cache import cache_page
+
 
 urlpatterns = [
-    path('', views.FoodHome.as_view(), name='home'),
+    path('', cache_page(40)(views.FoodHome.as_view()), name='home'),
     path('about/', views.about, name='about'),
     path('addpage/', views.AddPage.as_view(), name='addpage'),
     path('contact/', views.ContactFormView.as_view(), name='contact'),

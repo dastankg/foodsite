@@ -9,6 +9,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .forms import AddPostForm, ContactForm
 from .models import Food, TagPost
 from food.utils import DataMixin
+from django.core.cache import cache
 
 
 class FoodHome(DataMixin, ListView):
@@ -19,7 +20,11 @@ class FoodHome(DataMixin, ListView):
     paginate_by = 3
 
     def get_queryset(self):
-        return Food.published.select_related('cat')
+        f_lst = cache.get('food_posts')
+        if not f_lst:
+            f_lst = Food.published.select_related('cat')
+            cache.set('food_posts', f_lst, 60)
+        return f_lst
 
 
 @login_required

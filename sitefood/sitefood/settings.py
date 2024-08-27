@@ -46,18 +46,23 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
 
 ]
+
+# CACHE_MIDDLEWARE_ALIAS = 'default'
+# CACHE_MIDDLEWARE_SECONDS = 15
+# CACHE_MIDDLEWARE_KEY_PREFIX = 'sitefood'
 
 ROOT_URLCONF = 'sitefood.urls'
 
@@ -101,6 +106,12 @@ DATABASES = {
     }
 }
 
+CAHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379'
+    }
+}
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -172,3 +183,5 @@ DEFAULT_USER_IMAGE = MEDIA_URL + 'users/img.png'
 
 SOCIAL_AUTH_GITHUB_KEY = 'Ov23lipFgiNI2D27aAVf'
 SOCIAL_AUTH_GITHUB_SECRET = 'd38bcbd5a12594b2d743b41205202d29caa556fa'
+
+
