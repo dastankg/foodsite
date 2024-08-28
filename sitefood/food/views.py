@@ -18,6 +18,7 @@ class FoodHome(DataMixin, ListView):
     title_page = 'Главная страница'
     cat_selected = 0
     paginate_by = 3
+    context_object_name = 'posts'
 
     def get_queryset(self):
         f_lst = cache.get('food_posts')
